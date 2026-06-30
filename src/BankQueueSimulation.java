@@ -7,6 +7,10 @@ public class BankQueueSimulation extends JFrame {
 
     JTextArea outputArea;
     JButton simulateButton;
+    JButton startButton;
+
+    CardLayout cardLayout;
+    JPanel mainPanel;
 
     Random random = new Random();
     DecimalFormat df = new DecimalFormat("0.000");
@@ -16,19 +20,78 @@ public class BankQueueSimulation extends JFrame {
         setTitle("Bank Queue Simulation");
         setSize(1100,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
+
+        mainPanel.add(buildIntroPanel(), "intro");
+        mainPanel.add(buildSimulationPanel(), "simulation");
+
+        add(mainPanel);
+
+        cardLayout.show(mainPanel, "intro");
+
+        setVisible(true);
+    }
+
+    private JPanel buildIntroPanel(){
+
+        JPanel intro = new JPanel(new BorderLayout());
+        intro.setBorder(BorderFactory.createEmptyBorder(40,60,40,60));
+
+        JLabel heading = new JLabel("Single-Server Bank Queue Simulation", SwingConstants.CENTER);
+        heading.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        String text =
+                "<html><div style='text-align:left; font-size:13px; line-height:1.5;'>" +
+                        "This program simulates a single-server bank queue using random number generation.<br><br>" +
+                        "<b>Model assumptions:</b><br>" +
+                        "&nbsp;&nbsp;- Inter-arrival times follow a Uniform(0.5, 3.0) minute distribution.<br>" +
+                        "&nbsp;&nbsp;- Service times follow a Uniform(1.0, 4.0) minute distribution.<br>" +
+                        "&nbsp;&nbsp;- One teller (single server) handles customers on a First-Come, First-Served basis.<br>" +
+                        "&nbsp;&nbsp;- The simulation runs for 100 customers.<br><br>" +
+                        "<b>What the program calculates for each customer:</b><br>" +
+                        "&nbsp;&nbsp;- Arrival time and inter-arrival time<br>" +
+                        "&nbsp;&nbsp;- Service start time and waiting time<br>" +
+                        "&nbsp;&nbsp;- Service end time and total time in system<br><br>" +
+                        "<b>Overall queue statistics produced:</b><br>" +
+                        "&nbsp;&nbsp;- Average waiting time and average time in system<br>" +
+                        "&nbsp;&nbsp;- Maximum waiting time<br>" +
+                        "&nbsp;&nbsp;- Server utilization and total simulation time<br><br>" +
+                        "Click <b>Start Simulation</b> below to generate the results." +
+                        "</div></html>";
+
+        JLabel description = new JLabel(text);
+
+        startButton = new JButton("Start Simulation");
+        startButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        startButton.addActionListener(e -> cardLayout.show(mainPanel, "simulation"));
+
+        JPanel buttonWrap = new JPanel();
+        buttonWrap.add(startButton);
+
+        intro.add(heading, BorderLayout.NORTH);
+        intro.add(description, BorderLayout.CENTER);
+        intro.add(buttonWrap, BorderLayout.SOUTH);
+
+        return intro;
+    }
+
+    private JPanel buildSimulationPanel(){
+
+        JPanel sim = new JPanel(new BorderLayout());
 
         simulateButton = new JButton("Run Simulation");
 
         outputArea = new JTextArea();
         outputArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
-        add(simulateButton, BorderLayout.NORTH);
-        add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        sim.add(simulateButton, BorderLayout.NORTH);
+        sim.add(new JScrollPane(outputArea), BorderLayout.CENTER);
 
         simulateButton.addActionListener(e -> simulate());
 
-        setVisible(true);
+        return sim;
     }
 
     // Uniform random number
